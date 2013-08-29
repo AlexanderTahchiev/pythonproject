@@ -3,7 +3,50 @@ import sys
 from pygame.locals import *
 from math import pi
 import math
+
+
+def menu():
+    return sys.path.append('~/mypy/proect/menu_key/menu.py')
+
 pygame.init()
+
+
+class Player:
+    def __init__(self, name, turn, points):
+        self.turn = turn
+        self.points = points
+        self.name = name
+
+    def __change_turn__ (self):
+        return not turn
+
+    def __get_points__(self):
+        return self.points
+
+    def __moi_red_li_e__(self):
+        return turn
+
+    def return_all_lines(last_line_ends):
+        all_line_from_point = []
+        for i in all_lines_ends:
+            if i[0] == last_line_ends[0] or i[1] == last_line_ends[0]:
+                all_line_from_point.append(i)
+        return all_line_from_point
+
+    def is_it_point(last_line_ends):
+        point1 = last_line_ends[0]
+        point2 = last_line_ends[1]
+        number_of_made_points = 0
+        all_returned_lines = return_all_lines(last_line_ends)
+        if tuple(last_line_ends) in all_lines_ends:
+            return 0
+        for i in all_returned_lines:
+            if (i[0], point2) in all_lines_ends:
+                number_of_made_points=number_of_made_points+1
+        return print(number_of_made_points)
+
+Player1 = Player("Player1", True, 0)
+Player2 = Player("Player2", False, 0)
 
 
 class Colors:
@@ -13,11 +56,11 @@ class Colors:
     RED = (255, 0, 0)
 
 
-WINDOWHEIGHT = 860
-WINDOWLENGTH = 640
+WINDOWHEIGHT = 1200
+WINDOWLENGTH = 800
 POINTRADIUS = 3
 
-NUMBER_OF_POINTS = 6
+NUMBER_OF_POINTS = 8
 DISTANCE_FROM_POINT = 10
 
 mousex = 0
@@ -27,6 +70,13 @@ DISPLAYSURF.fill(Colors.BLACK)
 pygame.display.set_caption('THE GAME!')
 class cat:
     love = 1
+class Player:
+    def __init__ (self, name, turn, point):
+        self.name = name
+        self.turn = turn
+        self.points = points
+
+
 
 def main():
     global all_points_centers, all_points, prctective_area_of_points, dict_of_canters_points
@@ -39,9 +89,11 @@ def main():
     all_lines = []
     all_lines_ends = []
     dict_of_points_centers = dict()
+    #pygame.display.toggle_fullscreen()
 
     CAN_WE_LINE = False
     while len(all_points_centers) < NUMBER_OF_POINTS:
+        menu()
         for event in pygame.event.get():  # event handling loop
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
@@ -70,7 +122,9 @@ def main():
     print("all_points_centers", all_points_centers)
     print("all_lines_ends", all_lines_ends)
     last_line_ends = []
+    print(isinstance(is_it_point , Player))
     while True:  # main game loop
+        menu()
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
@@ -83,14 +137,14 @@ def main():
                         add_forbiden_points(last_line_ends)
                         second_point = IfPointAtClickReturn(mousex, mousey)
                         draw_point(first_point[0], first_point[1], Colors.GREEN)
+                        print(last_line_ends, all_lines_ends)
+                        Player.is_it_point(last_line_ends)
                         draw_line(
                             DISPLAYSURF, Colors.GREEN, first_point, second_point, 5)
                         second_point = False
                     elif not can_we_lineup(last_line_ends):
                         draw_point(first_point[0], first_point[1], Colors.GREEN)
                         second_point = False
-                    print("map_between_point_forbpoints", map_between_point_forbpoints)
-                    print("all_lines_ends", all_lines_ends) 
                 if IfPointAtClick(mousex, mousey) and CAN_WE_LINE:
                     CAN_WE_LINE = False
                     last_line_ends = []
@@ -274,6 +328,7 @@ def compare_all_points_with_new_one(all_points_centers, new_point_center):
             if dist_between_point_and_line(all_points_centers[i], all_points_centers[j], new_point_center) < DISTANCE_FROM_POINT:
                 return True
     return False
+#proverki dali ima tochka
 
 
 
