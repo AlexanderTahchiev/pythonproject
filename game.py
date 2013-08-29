@@ -10,14 +10,38 @@ def menu():
 
 pygame.init()
 
+class Colors:
+    YELLOW = (255, 255, 0)
+    BLACK = (0, 0, 0)
+    GREEN = (0, 255, 0)
+    KINDA_GREEN = (0, 180, 0)
+    RED = (255, 0, 0)
+
+
+WINDOWHEIGHT = 1200
+WINDOWLENGTH = 800
+POINTRADIUS = 3
+
+NUMBER_OF_POINTS = 4
+DISTANCE_FROM_POINT = 10
+
+mousex = 0
+mousey = 0
+
+DISPLAYSURF = pygame.display.set_mode((WINDOWHEIGHT, WINDOWLENGTH), 0, 32)
+DISPLAYSURF.fill(Colors.BLACK)
+pygame.display.set_caption('THE GAME!')
+
+
 
 class Player:
 
-    def __init__(self, name, turn, points):
+    def __init__(self, name, turn, points, pos):
         self.turn = turn
         self.points = points
         self.name = name
-
+        self.pos = pos
+    old_points = 0
     def change_turn(self):
         return not turn
 
@@ -34,6 +58,7 @@ class Player:
                 all_line_from_point.append(i)
         return all_line_from_point
 
+
     def in_event_of_point(self, other, last_line_ends):
         point1 = last_line_ends[0]
         point2 = last_line_ends[1]
@@ -49,39 +74,29 @@ class Player:
             other.turn = not other.turn
         else:
             self.points = self.points + number_of_made_points
-    
+
+    def display_points(self):
+        poin = myfont.render(str(self.points), 1, Colors.YELLOW)
+        if self.old_points < self.points:
+        
+            pygame.draw.polygon(DISPLAYSURF, Colors.BLACK, [(self.pos[0]-7, self.pos[1]-7),(self.pos[0]+20, self.pos[1]-7),(self.pos[0]+20, self.pos[1]+20),(self.pos[0]-7, self.pos[1]+20)])
+
+            self.old_points = self.points
+        return DISPLAYSURF.blit(poin, self.pos)     
     def get_stats(self):
         print(self.name, ":", self.points, " ", self.turn)
 
+myfont = pygame.font.SysFont("Comic Sans MS", 25)
+Pl1 = myfont.render("Player1:", 1, Colors.YELLOW)
+Pl2 = myfont.render("Player2:", 1, Colors.YELLOW)
+DISPLAYSURF.blit(Pl1, (20, 10))
+DISPLAYSURF.blit(Pl2, (135, 10))
 
 
-Player1 = Player("Player1", True, 0)
-Player2 = Player("Player2", False, 0)
+Player1 = Player("Player1", True, 0, (100, 10))
+Player2 = Player("Player2", False, 0, (230, 10))
 
 
-class Colors:
-    BLACK = (0, 0, 0)
-    GREEN = (0, 255, 0)
-    KINDA_GREEN = (0, 180, 0)
-    RED = (255, 0, 0)
-
-
-WINDOWHEIGHT = 1200
-WINDOWLENGTH = 800
-POINTRADIUS = 3
-
-NUMBER_OF_POINTS = 13
-DISTANCE_FROM_POINT = 10
-
-mousex = 0
-mousey = 0
-DISPLAYSURF = pygame.display.set_mode((WINDOWHEIGHT, WINDOWLENGTH), 0, 32)
-DISPLAYSURF.fill(Colors.BLACK)
-pygame.display.set_caption('THE GAME!')
-
-
-class cat:
-    love = 1
 
 
 def main():
@@ -101,11 +116,13 @@ def main():
     while len(all_points_centers) < NUMBER_OF_POINTS:
         menu()
         for event in pygame.event.get():  # event handling loop
+            Player1.display_points()
+            Player2.display_points()
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
             elif event.type == MOUSEBUTTONUP:
                 mousex, mousey = (event.pos[0], event.pos[1])
-                if IfPointAreaAtClick(mousex, mousey):
+                if IfPointAreaAtClick(mousex, mousey) or mousey < 35:
                     pass
                 elif len(all_points_centers) > 1:
                     if compare_all_points_with_new_one(all_points_centers, (mousex, mousey)):
@@ -129,8 +146,10 @@ def main():
     print("all_lines_ends", all_lines_ends)
     last_line_ends = []
     while True:  # main game loop
-        menu()
+        
         for event in pygame.event.get():
+            Player1.display_points()
+            Player2.display_points()
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
             elif event.type == MOUSEBUTTONUP:
@@ -168,10 +187,16 @@ def main():
                     CAN_WE_LINE = True
             if not did_it_end():
                 if Player1.get_points() > Player2.get_points():
+                    winner  = myfont.render("Player1 won", 1, Colors.YELLOW)
+                    DISPLAYSURF.blit(winner, (WINDOWHEIGHT - 100 ,  10))
                     print("Player1 won")
                 elif Player1.get_points() < Player2.get_points():
+                    winner = myfont.render("Player2 won", 1, Colors.YELLOW)
+                    DISPLAYSURF.blit(winner, (WINDOWHEIGHT - 150 ,  10))
                     print("Player2 won")
                 else:
+                    winner = myfont.render("Draw", 1, Colors.YELLOW)
+                    DISPLAYSURF.blit(winner, (WINDOWHEIGHT - 150 ,  10))
                     print("Draw")
         pygame.display.update()
 
