@@ -22,7 +22,7 @@ WINDOWHEIGHT = 1200
 WINDOWLENGTH = 800
 POINTRADIUS = 3
 
-NUMBER_OF_POINTS = 4
+NUMBER_OF_POINTS = 15
 DISTANCE_FROM_POINT = 10
 
 mousex = 0
@@ -73,7 +73,10 @@ class Player:
             self.turn = not self.turn
             other.turn = not other.turn
         else:
-            self.points = self.points + number_of_made_points
+            if number_of_made_points > 2:
+                self.points = self.points + 2
+            else:    
+                self.points = self.points + number_of_made_points
 
     def display_points(self):
         poin = myfont.render(str(self.points), 1, Colors.YELLOW)
