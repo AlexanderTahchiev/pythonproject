@@ -12,38 +12,48 @@ pygame.init()
 
 
 class Player:
+
     def __init__(self, name, turn, points):
         self.turn = turn
         self.points = points
         self.name = name
 
-    def __change_turn__ (self):
+    def change_turn(self):
         return not turn
 
-    def __get_points__(self):
+    def get_points(self):
         return self.points
 
-    def __moi_red_li_e__(self):
-        return turn
+    def moi_red_li_e(self):
+        return self.turn
 
-    def return_all_lines(last_line_ends):
+    def return_all_lines(self, last_line_ends):
         all_line_from_point = []
         for i in all_lines_ends:
             if i[0] == last_line_ends[0] or i[1] == last_line_ends[0]:
                 all_line_from_point.append(i)
         return all_line_from_point
 
-    def is_it_point(last_line_ends):
+    def in_event_of_point(self, other, last_line_ends):
         point1 = last_line_ends[0]
         point2 = last_line_ends[1]
         number_of_made_points = 0
-        all_returned_lines = return_all_lines(last_line_ends)
+        all_returned_lines = self.return_all_lines(last_line_ends)
         if tuple(last_line_ends) in all_lines_ends:
-            return 0
+            return
         for i in all_returned_lines:
             if (i[0], point2) in all_lines_ends:
-                number_of_made_points=number_of_made_points+1
-        return print(number_of_made_points)
+                number_of_made_points = number_of_made_points + 1
+        if number_of_made_points == 0 and len(last_line_ends) == 2:
+            self.turn = not self.turn
+            other.turn = not other.turn
+        else:
+            self.points = self.points + number_of_made_points
+    
+    def get_stats(self):
+        print(self.name, ":", self.points, " ", self.turn)
+
+
 
 Player1 = Player("Player1", True, 0)
 Player2 = Player("Player2", False, 0)
@@ -60,7 +70,7 @@ WINDOWHEIGHT = 1200
 WINDOWLENGTH = 800
 POINTRADIUS = 3
 
-NUMBER_OF_POINTS = 8
+NUMBER_OF_POINTS = 13
 DISTANCE_FROM_POINT = 10
 
 mousex = 0
@@ -68,14 +78,10 @@ mousey = 0
 DISPLAYSURF = pygame.display.set_mode((WINDOWHEIGHT, WINDOWLENGTH), 0, 32)
 DISPLAYSURF.fill(Colors.BLACK)
 pygame.display.set_caption('THE GAME!')
+
+
 class cat:
     love = 1
-class Player:
-    def __init__ (self, name, turn, point):
-        self.name = name
-        self.turn = turn
-        self.points = points
-
 
 
 def main():
@@ -89,7 +95,7 @@ def main():
     all_lines = []
     all_lines_ends = []
     dict_of_points_centers = dict()
-    #pygame.display.toggle_fullscreen()
+    # pygame.display.toggle_fullscreen()
 
     CAN_WE_LINE = False
     while len(all_points_centers) < NUMBER_OF_POINTS:
@@ -122,7 +128,6 @@ def main():
     print("all_points_centers", all_points_centers)
     print("all_lines_ends", all_lines_ends)
     last_line_ends = []
-    print(isinstance(is_it_point , Player))
     while True:  # main game loop
         menu()
         for event in pygame.event.get():
@@ -136,14 +141,21 @@ def main():
                     if can_we_lineup(last_line_ends):
                         add_forbiden_points(last_line_ends)
                         second_point = IfPointAtClickReturn(mousex, mousey)
-                        draw_point(first_point[0], first_point[1], Colors.GREEN)
-                        print(last_line_ends, all_lines_ends)
-                        Player.is_it_point(last_line_ends)
+                        draw_point(
+                            first_point[0], first_point[1], Colors.GREEN)
+                        print(tuple(last_line_ends), all_lines_ends)
+                        if Player1.moi_red_li_e():
+                            Player1.in_event_of_point(Player2, last_line_ends)
+                        else:
+                            Player2.in_event_of_point(Player1, last_line_ends)
+                        Player1.get_stats()
+                        Player2.get_stats()
                         draw_line(
                             DISPLAYSURF, Colors.GREEN, first_point, second_point, 5)
                         second_point = False
                     elif not can_we_lineup(last_line_ends):
-                        draw_point(first_point[0], first_point[1], Colors.GREEN)
+                        draw_point(
+                            first_point[0], first_point[1], Colors.GREEN)
                         second_point = False
                 if IfPointAtClick(mousex, mousey) and CAN_WE_LINE:
                     CAN_WE_LINE = False
@@ -154,8 +166,15 @@ def main():
                     first_point = IfPointAtClickReturn(mousex, mousey)
                     draw_point(first_point[0], first_point[1], Colors.RED)
                     CAN_WE_LINE = True
-
+            if not did_it_end():
+                if Player1.get_points() > Player2.get_points():
+                    print("Player1 won")
+                elif Player1.get_points() < Player2.get_points():
+                    print("Player2 won")
+                else:
+                    print("Draw")
         pygame.display.update()
+
 
 
 def IfPointAtClick(mousex, mousey):
@@ -194,7 +213,8 @@ def draw_point(mousex, mousey, color):
             [mousex - 15, mousey - 15, 30, 30],
             1))
 
-#construktori
+# construktori
+
 
 def creat_dict_of_points_centers(all_points_centers):
     dict_of_points_centers = dict()
@@ -217,11 +237,13 @@ def making_dict_of_points_names():
 def returned_points(mousex, mousey, dict_of_points_centers):
     return dict_of_canters_points[(mousex, mousey)]
 
-#zapisva q po dvata nachina (A,B), (B,A)
+# zapisva q po dvata nachina (A,B), (B,A)
+
+
 def draw_line(surf, color, point1, point2, thickness, ):
-    if (point1,point2) in all_lines_ends:
+    if (point1, point2) in all_lines_ends:
         pass
-    elif point1==point2:
+    elif point1 == point2:
         pass
     else:
         all_lines_ends.append((point1, point2))
@@ -231,7 +253,7 @@ def draw_line(surf, color, point1, point2, thickness, ):
         return pygame.draw.line(DISPLAYSURF, Colors.GREEN, point1, point2, thickness)
 
 
-#nad tezi dam islq
+# nad tezi dam islq
 
 def caluclate_line_by_2_points(point1, point2):
     if point1[0] == point2[0]:
@@ -251,44 +273,48 @@ def add_forbiden_points(last_line_ends):
 
         for i in all_points_centers:
             for j in all_points_centers:
-                rand_line =  caluclate_line_by_2_points(i, j)              
-                #ako sa v edna polu ravnina i po golemi ot pravata i
+                rand_line = caluclate_line_by_2_points(i, j)
+                # ako sa v edna polu ravnina i po golemi ot pravata i
                 if i == j or i in last_line_ends or j in last_line_ends:
                     pass
                 elif i in last_line_ends and j not in last_line_ends:
                     pass
                 elif j in last_line_ends and i not in last_line_ends:
                     pass
-                elif pot_line[0]*i[0] + pot_line[1] < i[1] and pot_line[0]*j[0] + pot_line[1] < j[1]:
+                elif pot_line[0] * i[0] + pot_line[1] < i[1] and pot_line[0] * j[0] + pot_line[1] < j[1]:
                     pass
-                elif pot_line[0]*i[0] + pot_line[1] >= i[1] and pot_line[0]*j[0] + pot_line[1] >= j[1]:
+                elif pot_line[0] * i[0] + pot_line[1] >= i[1] and pot_line[0] * j[0] + pot_line[1] >= j[1]:
                     pass
 
-                elif rand_line[0]*point1[0] + rand_line[1] < point1[1] and rand_line[0]*point2[0] + rand_line[1] < point2[1]:
+                elif rand_line[0] * point1[0] + rand_line[1] < point1[1] and rand_line[0] * point2[0] + rand_line[1] < point2[1]:
                     pass
-                elif rand_line[0]*point1[0] + rand_line[1] > point1[1] and rand_line[0]*point2[0] + rand_line[1] > point2[1]:
+                elif rand_line[0] * point1[0] + rand_line[1] > point1[1] and rand_line[0] * point2[0] + rand_line[1] > point2[1]:
                     pass
                 else:
                     point_key1 = dict_of_canters_points[i]
                     point_key2 = dict_of_canters_points[j]
-                    map_between_point_forbpoints[point_key1].append(dict_of_canters_points[j])
-                    map_between_point_forbpoints[point_key2].append(dict_of_canters_points[i])
-                    map_between_point_forbpoints[point_key2] = list(set(map_between_point_forbpoints[point_key2]))
-                    map_between_point_forbpoints[point_key1] = list(set(map_between_point_forbpoints[point_key1]))
+                    map_between_point_forbpoints[
+                        point_key1].append(dict_of_canters_points[j])
+                    map_between_point_forbpoints[
+                        point_key2].append(dict_of_canters_points[i])
+                    map_between_point_forbpoints[point_key2] = list(
+                        set(map_between_point_forbpoints[point_key2]))
+                    map_between_point_forbpoints[point_key1] = list(
+                        set(map_between_point_forbpoints[point_key1]))
 
 
-def calculate_line_value(a_b,point):
-    return round(a_b[0]*point[0] + a_b[1])
-
+def calculate_line_value(a_b, point):
+    return round(a_b[0] * point[0] + a_b[1])
 
 
 def ispnt_underorabove(line, point):
-    if line[0]*point[0] + line[1] < point[1]:
+    if line[0] * point[0] + line[1] < point[1]:
         return 1
-    elif line[0]*point[0] + line[1] > point[1]:
+    elif line[0] * point[0] + line[1] > point[1]:
         return 2
     else:
         return 0
+
 
 def can_we_lineup(last_line_ends):
     point1 = last_line_ends[0]
@@ -296,6 +322,8 @@ def can_we_lineup(last_line_ends):
     p1 = dict_of_canters_points[point1]
     p2 = dict_of_canters_points[point2]
     if point1 == point2:
+        return False
+    if last_line_ends in all_lines_ends:
         return False
     if p2 in map_between_point_forbpoints[dict_of_canters_points[point1]]:
         return False
@@ -314,8 +342,6 @@ def IfPointAreaAtClick(mousex, mousey):
     return False
 
 
-
-
 def dist_between_point_and_line(point1, point2, point3):
     lineeq = caluclate_line_by_2_points(point1, point2)
     return round(abs((lineeq[0] * point3[0] - point3[1] + lineeq[1]) / (((lineeq[0]) ** 2 + 1) ** 0.5)))
@@ -328,9 +354,16 @@ def compare_all_points_with_new_one(all_points_centers, new_point_center):
             if dist_between_point_and_line(all_points_centers[i], all_points_centers[j], new_point_center) < DISTANCE_FROM_POINT:
                 return True
     return False
-#proverki dali ima tochka
 
-
+def did_it_end():
+    for i in all_points_centers:
+        for j in all_points_centers:
+            the_line = (i,j)
+            if i == j:
+                pass
+            elif can_we_lineup(the_line):
+                return True
+    return False
 
 # tezi hich ne gi polzvam ma da sedqt
 def IfLineAtClick(mousex, mousey):
