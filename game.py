@@ -45,6 +45,14 @@ class AI:
         self.pos = pos
 
 
+class Point:
+    pass
+
+
+class Line:
+    pass
+
+
 class Player:
 
     """Vsichko nujna informacia koqto trqbva da se sledi za igracha
@@ -138,12 +146,11 @@ def main():
     CAN_WE_LINE = False
     while len(all_points_centers) < NUMBER_OF_POINTS:
         """Purviq cikul dokato se napravqt n na broi tochki"""
-        menu()
-        for event in pygame.event.get():  # event handling loop
+        Player1.display_turn()
+        Player2.display_turn()
+        for event in pygame.event.get():
             Player1.display_points()
             Player2.display_points()
-            Player1.display_turn()
-            Player2.display_turn()
             if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
                 terminate()
             elif event.type == MOUSEBUTTONUP:
@@ -154,14 +161,17 @@ def main():
                     if compare_all_points_with_new_one(all_points_centers, (mousex, mousey)):
                         pass
                     else:
+                        draw_point(mousex, mousey, Colors.GREEN)
                         Player1.turn = not Player1.turn
                         Player2.turn = not Player2.turn
-                        draw_point(mousex, mousey, Colors.GREEN)
+                        Player1.display_turn()
+                        Player2.display_turn()
                 else:
+                    draw_point(mousex, mousey, Colors.GREEN)
                     Player1.turn = not Player1.turn
                     Player2.turn = not Player2.turn
-                    draw_point(mousex, mousey, Colors.GREEN)
-
+                    Player1.display_turn()
+                    Player2.display_turn()
             pygame.display.update()
 
     dict_of_points_centers = creat_dict_of_points_centers(
